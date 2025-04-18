@@ -8,17 +8,9 @@ namespace JWTIdentity.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ProductsController : ControllerBase
+    [Authorize]
+    public class ProductsController (AppDbContext _context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public ProductsController(AppDbContext context)
-        {
-            _context = context;
-        }
-
-
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {

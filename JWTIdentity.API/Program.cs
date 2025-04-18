@@ -3,6 +3,8 @@ using JWTIdentity.API.Entities;
 using JWTIdentity.API.Options;
 using JWTIdentity.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -18,7 +20,7 @@ builder.Services.AddAuthentication(config =>
     config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
-    var jwtTokenOptions = builder.Configuration.GetSection(nameof(TokenOptions)).Get<TokenOptions>();
+    var jwtTokenOptions = builder.Configuration.GetSection(nameof(JWTIdentity.API.Options.TokenOptions)).Get<JWTIdentity.API.Options.TokenOptions>();
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new()
     {
@@ -34,9 +36,6 @@ builder.Services.AddAuthentication(config =>
     };
 });
 
-builder.Services.AddAuthorization();
-
-
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
@@ -44,7 +43,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppDbContext>();
 
-builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection(nameof(TokenOptions)));
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+builder.Services.Configure<JWTIdentity.API.Options.TokenOptions>(builder.Configuration.GetSection(nameof(JWTIdentity.API.Options.TokenOptions)));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
