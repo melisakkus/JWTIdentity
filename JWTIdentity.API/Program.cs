@@ -34,6 +34,8 @@ builder.Services.AddAuthentication(config =>
     };
 });
 
+builder.Services.AddAuthorization();
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
