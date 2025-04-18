@@ -29,10 +29,11 @@ builder.Services.AddAuthentication(config =>
         ValidIssuer = jwtTokenOptions.Issuer,
         ValidAudience = jwtTokenOptions.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtTokenOptions.Key)),
-        ClockSkew = TimeSpan.Zero, // Token süresi dolduðunda 5 dakika beklemeden hemen geçersiz kýl
+        ClockSkew = TimeSpan.Zero,
         NameClaimType = ClaimTypes.Name,
     };
 });
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
